@@ -11,7 +11,7 @@ jobs:
           name: Build
           command: |
             TAG=$CIRCLE_BUILD_NUM
-            docker build --build-arg date=$(date +%Y-%m-%dT%T%z)
+            docker build --build-arg date=$(date +%Y-%m-%dT%T%z) .
   push:
     docker:
       - image: circleci/build-image
@@ -24,10 +24,11 @@ jobs:
             docker images
 
 #  . damacus/php-composer:$TAG
-# https://github.com/pluto-css/website/blob/deploy/.travis.yml
 workflows:
   version: 2
   build_and_push:
     jobs:
       - build
-      - push
+      - push:
+          requires:
+            - build
