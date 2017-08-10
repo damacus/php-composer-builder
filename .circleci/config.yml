@@ -18,7 +18,7 @@ jobs:
             mv /tmp/docker/* /usr/bin
       - run:
           name: Build
-          command: docker build --build-arg date=$(date +%Y-%m-%dT%T%z) . -t php-composer
+          command: docker build --build-arg date=$(date +%Y-%m-%dT%T%z) . -t damacus/php-composer
       - deploy:
           name: Push
           context: org-global
@@ -28,8 +28,8 @@ jobs:
               docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
               echo "--- Built Images ---"
               docker images php-composer
-              docker push $(docker images | awk {'print $3'} | sed -n 2p) damacus/php-composer:$TAG
-              docker push $(docker images | awk {'print $3'} | sed -n 2p) damacus/php-composer:latest
+              docker push damacus/php-composer:$TAG
+              docker push damacus/php-composer:latest
             else
               echo "Not on master so not tagging"
               docker images
