@@ -1,5 +1,31 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/build-image
+    steps:
+      - checkout
+      # - setup_remote_docker
+      #     version: 17.06.0-ce
+      - run:
+          name: Build
+          command: |
+            TAG=$CIRCLE_BUILD_NUM
+            docker build --build-arg date=$(date +%Y-%m-%dT%T%z)
+  push:
+    docker:
+      - image: circleci/build-image
+      - run:
+          name: Push
+          command: |
+            TAG=$CIRCLE_BUILD_NUM
+            docker images
 
-
-
+#  . damacus/php-composer:$TAG
 # https://github.com/pluto-css/website/blob/deploy/.travis.yml
-# docker build --build-arg date=$(date +%Y-%m-%dT%T%z) -t php-composer:latest .
+workflows:
+  version: 2
+  build_and_push:
+    jobs:
+      - build
+      - push
