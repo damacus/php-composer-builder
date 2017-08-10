@@ -15,6 +15,8 @@ jobs:
   push:
     docker:
       - image: circleci/build-image
+    steps:
+      - checkout
       - run:
           name: Push
           command: |
