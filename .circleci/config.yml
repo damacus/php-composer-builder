@@ -5,13 +5,11 @@ jobs:
       - image: circleci/build-image
     steps:
       - checkout
-      # - setup_remote_docker
-      #     version: 17.06.0-ce
+      - setup_remote_docker:
+          version: 17.06.0-ce
       - run:
           name: Build
-          command: |
-            TAG=$CIRCLE_BUILD_NUM
-            docker build --build-arg date=$(date +%Y-%m-%dT%T%z) .
+          command: docker build --build-arg date=$(date +%Y-%m-%dT%T%z) .
   push:
     docker:
       - image: circleci/build-image
@@ -22,6 +20,7 @@ jobs:
           command: |
             TAG=$CIRCLE_BUILD_NUM
             docker images
+# docker tag
 
 #  . damacus/php-composer:$TAG
 workflows:
