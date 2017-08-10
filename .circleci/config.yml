@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build_and_push:
     docker:
       - image: circleci/build-image
     steps:
@@ -10,26 +10,25 @@ jobs:
       - run:
           name: Build
           command: docker build --build-arg date=$(date +%Y-%m-%dT%T%z) .
-  push:
-    docker:
-      - image: circleci/build-image
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 17.06.0-ce
-      - run:
+      - deploy:
           name: Push
+          context: org-global
           command: |
             TAG=$CIRCLE_BUILD_NUM
-            docker images
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login --username=$DOCKER_LOGIN --password=$DOCKER_PASSWORD
+              docker images
+            else
+              echo "Not on master so not tagging"
+            fi
+
 # docker tag
 
 #  . damacus/php-composer:$TAG
+
 workflows:
   version: 2
   build_and_push:
     jobs:
-      - build
-      - push:
-          requires:
-            - build
+      - build_and_push:
+          context: org-global
