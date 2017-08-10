@@ -3,7 +3,7 @@ jobs:
   build_and_push:
     docker:
       - image: golang:latest
-    working_directory: /go/src/github.com/CircleCI-Public/circleci-demo-docker
+    working_directory: /go/src/github.com/php-composer
     steps:
       - checkout
       - setup_remote_docker:
@@ -18,7 +18,7 @@ jobs:
             mv /tmp/docker/* /usr/bin
       - run:
           name: Build
-          command: docker build --build-arg date=$(date +%Y-%m-%dT%T%z) .
+          command: docker build --build-arg date=$(date +%Y-%m-%dT%T%z) . -t php-composer
       - deploy:
           name: Push
           context: org-global
@@ -26,16 +26,14 @@ jobs:
             TAG=$CIRCLE_BUILD_NUM
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
-              docker images
+              echo "--- Built Images ---"
+              docker images php-composer
+              docker push $(docker images | awk {'print $3'} | sed -n 2p) damacus/php-composer:$TAG
+              docker push $(docker images | awk {'print $3'} | sed -n 2p) damacus/php-composer:latest
             else
               echo "Not on master so not tagging"
-              docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
-              echo $(docker images | awk {'print $3'} | sed -n 2p)
+              docker images
             fi
-
-# docker tag
-
-#  . damacus/php-composer:$TAG
 
 workflows:
   version: 2
