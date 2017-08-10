@@ -2,7 +2,7 @@ version: 2
 jobs:
   build_and_push:
     docker:
-      - image: circleci/build-image
+      - image: golang:latest
     steps:
       - checkout
       - setup_remote_docker:
@@ -21,7 +21,8 @@ jobs:
             else
               echo "Not on master so not tagging"
               docker login --username=$DOCKER_LOGIN --password=$DOCKER_PASSWORD
-              docker images
+              IMAGE = docker images | awk {'print $3'} | sed -n 2p
+              echo $IMAGE
             fi
 
 # docker tag
