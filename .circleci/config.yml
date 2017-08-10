@@ -7,7 +7,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 17.06.0-ce
+          version: 17.05.0-ce
       - run:
           name: Install Docker client
           command: |
@@ -25,11 +25,11 @@ jobs:
           command: |
             TAG=$CIRCLE_BUILD_NUM
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              docker login --username=$DOCKER_LOGIN --password=$DOCKER_PASSWORD
+              docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
               docker images
             else
               echo "Not on master so not tagging"
-              docker login --username=$DOCKER_LOGIN --password=$DOCKER_PASSWORD
+              docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
               IMAGE = docker images | awk {'print $3'} | sed -n 2p
               echo $IMAGE
             fi
