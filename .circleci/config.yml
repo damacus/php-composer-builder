@@ -20,6 +20,8 @@ jobs:
               docker images
             else
               echo "Not on master so not tagging"
+              docker login --username=$DOCKER_LOGIN --password=$DOCKER_PASSWORD
+              docker images
             fi
 
 # docker tag
