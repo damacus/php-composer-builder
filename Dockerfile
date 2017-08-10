@@ -7,6 +7,7 @@ ARG date
 LABEL org.label-schema.build-date=$date
 
 RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN apk add --no-cache php5-soap
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
 WORKDIR /src
