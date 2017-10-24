@@ -1,3 +1,7 @@
+---
+# Use "default as the reponame's default so we can run this generic script locally
+#
+
 version: 2
 jobs:
   build:
