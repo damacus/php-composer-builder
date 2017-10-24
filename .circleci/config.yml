@@ -1,44 +1,41 @@
 version: 2
 jobs:
-  build_and_push:
+  build:
     docker:
-      - image: golang:latest
-    working_directory: /go/src/github.com/php-composer
+      - image: damacus/docker-builder:latest
+    working_directory: ~/project
     steps:
       - checkout
       - setup_remote_docker:
           version: 17.05.0-ce
+      - restore_cache:
+          keys:
+            - v2-{{ arch }}-{{ .Branch }}-{{ checksum "Dockerfile" }}
+          paths:
+            - /caches/app.tar
       - run:
-          name: Install Docker client
+          name: Build Image
           command: |
-            set -x
-            VER="17.05.0-ce"
-            curl -L -o /tmp/docker.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
-            tar -xz -C /tmp -f /tmp/docker.tgz
-            mv /tmp/docker/* /usr/bin
-      - run:
-          name: Build
-          command: docker build --build-arg date=$(date +%Y-%m-%dT%T%z) . -t damacus/php-composer
+            apk add --no-cache py-pip
+            pip install docker-compose==1.12.0
+            source ./.docker/functions.sh
+            docker-compose -f .docker/docker-compose.yaml up -d
+            inspec exec .docker-tests -t docker://docker_composer_builder --controls=composer-commands
+            build
+      - save_cache:
+          key: v2-{{ arch }}-{{ .Branch }}-{{ checksum "Dockerfile" }}
+          paths:
+            - /caches/app.tar
       - deploy:
-          name: Push
+          name: Push Image
           context: org-global
           command: |
-            TAG=$CIRCLE_BUILD_NUM
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
-              echo "--- Built Images ---"
-              docker images damacus/php-composer
-              docker tag damacus/php-composer:latest damacus/php-composer:$TAG
-              docker push damacus/php-composer:$TAG
-              docker push damacus/php-composer:latest
-            else
-              echo "Not on master so not tagging"
-              docker images
-            fi
+            source "./.docker/functions.sh"
+            push
 
 workflows:
   version: 2
   build_and_push:
     jobs:
-      - build_and_push:
+      - build:
           context: org-global

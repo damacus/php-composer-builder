@@ -1,19 +1,23 @@
 FROM php:7.1.8-alpine
-LABEL org.label-schema.name "php-composer-builder"
-LABEL org.label-schema.description "PHP Composer Container for CI Build Environments"
-LABEL org.label-schema.maintainer "Dan Webb"
-LABEL org.label-schema.vcs-url "https://github.com/damacus/php-composer-builder"
-ARG date
-LABEL org.label-schema.build-date=$date
-
-RUN docker-php-ext-install mysqli pdo pdo_mysql
-RUN wget -O /etc/apk/keys/php-alpine.rsa.pub http://php.codecasts.rocks/php-alpine.rsa.pub && \
-    echo "@php http://php.codecasts.rocks/v3.6/php-7.1" >> /etc/apk/repositories && \
-    apk add --no-cache php7-soap@php
+ARG PROJECT
+ARG DESCRIPTION
+ARG MAINTAINER
+ARG URL
+ARG DATE
+ARG COMMIT
+LABEL "org.label-schema.name"=$PROJECT
+LABEL "org.label-schema.build-date"=$DATE
+LABEL "org.label-schema.maintainer"=$MAINTAINER
+LABEL "org.label-schema.description"=$DESCRIPTION
+LABEL "org.label-schema.vcs-url"=$URL
+LABEL "org.label-schema.commit-sha"=$COMMIT
 
 WORKDIR /opt
 COPY install-composer.sh install-composer.sh
-RUN apk update && apk add ca-certificates && update-ca-certificates && apk add openssl
-RUN chmod +x install-composer.sh && ./install-composer.sh
+RUN apk add --no-cache ca-certificates openssl &&\
+    update-ca-certificates                     &&\
+    chmod +x install-composer.sh               &&\
+    ./install-composer.sh
+RUN apk add --no-cache git
 
 WORKDIR /src
