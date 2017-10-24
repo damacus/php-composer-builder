@@ -24,7 +24,7 @@ jobs:
             pip install docker-compose==1.12.0
             source ./.docker/functions.sh
             docker-compose -f .docker/docker-compose.yaml up -d
-            inspec exec .docker-tests -t docker://docker_composer_builder_1 --controls=composer-commands
+            inspec exec test -t docker://docker_composer_builder_1
             build
       - save_cache:
           key: v2-{{ arch }}-{{ .Branch }}-{{ checksum "Dockerfile" }}
