@@ -11,4 +11,8 @@ control 'composer-commands' do
     its('exit_status') { should match 0 }
     its('stdout') { should match /Composer version 1.5.2/ }
   end
+
+  describe command('git') do
+    its('stdout') { should match /These are common Git commands used in various situations/ }
+  end
 end
