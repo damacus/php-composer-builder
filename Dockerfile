@@ -1,17 +1,4 @@
 FROM php:7.1.8-alpine
-ARG PROJECT
-ARG DESCRIPTION
-ARG MAINTAINER
-ARG URL
-ARG DATE
-ARG COMMIT
-ARG user='root'
-LABEL "org.label-schema.name"=$PROJECT
-LABEL "org.label-schema.build-date"=$DATE
-LABEL "org.label-schema.maintainer"=$MAINTAINER
-LABEL "org.label-schema.description"=$DESCRIPTION
-LABEL "org.label-schema.vcs-url"=$URL
-LABEL "org.label-schema.commit-sha"=$COMMIT
 
 WORKDIR /opt
 COPY install-composer.sh install-composer.sh
@@ -24,5 +11,18 @@ RUN apk add --no-cache $BUILD_PACKAGES    &&\
     chmod +x install-composer.sh          &&\
     ./install-composer.sh
 
-USER $user 
+USER $user
 WORKDIR /project
+
+ARG PROJECT
+ARG DATE
+ARG DESCRIPTION
+ARG URL
+ARG COMMIT
+ARG user='root'
+
+LABEL "io.damacus.title"=$PROJECT            \
+      "io.damacus.created"=$DATE             \
+      "io.damacus.description"=$DESCRIPTION  \
+      "io.damacus.url"=$URL                  \
+      "io.damacus.revision"=$COMMIT
