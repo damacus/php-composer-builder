@@ -2,8 +2,7 @@ version: '3.2'
 
 services:
   composer_builder:
-    build:
-      context: ..
+    image: damacus/php-composer-builder
     entrypoint: /bin/sh
     stdin_open: true
     tty: true
