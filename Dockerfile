@@ -1,4 +1,4 @@
-FROM php:7.1-alpine3.7
+FROM php:7.2-alpine
 
 WORKDIR /opt
 ARG user='root'
