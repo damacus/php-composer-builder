@@ -1,5 +1,5 @@
 # encoding: utf-8
-# copyright: 2017, DeBankeGroup
+# copyright: 2018, Damacus.io
 
 title 'Composer Command'
 

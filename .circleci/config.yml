@@ -1,57 +1,66 @@
----
-# Use "default as the reponame's default so we can run this generic script locally
-#
-
 version: 2
 jobs:
-  build:
+  test:
     docker:
       - image: damacus/docker-builder:latest
     working_directory: ~/project
     steps:
       - checkout
       - setup_remote_docker:
-          version: 17.05.0-ce
-      - restore_cache:
-          keys:
-            - v2-{{ arch }}-{{ .Branch }}-{{ checksum "Dockerfile" }}
-          paths:
-            - /caches/app.tar
+          version: 17.09.0-ce
       - run:
-          name: Build Image
+          name: Build & Test Image
           command: |
-            apk add --no-cache py-pip
-            pip install docker-compose==1.12.0
-            source ./.docker/functions.sh
-            build
-            docker-compose -f .docker/docker-compose.yaml up -d
-            inspec exec tests -t docker://docker_composer_builder_1 --controls=composer-commands
+            docker-compose up -d --build
+            inspec exec tests -t "docker://php-composer-builder"
+            docker-compose down
 
-      - save_cache:
-          key: v2-{{ arch }}-{{ .Branch }}-{{ checksum "Dockerfile" }}
-          paths:
-            - /caches/app.tar
+  build_and_deploy:
+    docker:
+      - image: damacus/docker-builder:latest
+    working_directory: ~/project
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 17.09.0-ce
+      - run:
+          name: Build & Test Image
+          command: |
+            docker-compose up -d --build
+            inspec exec tests -t "docker://php-composer-builder"
+            docker-compose down
       - deploy:
           name: Push Image
-          context: org-global
           command: |
-            source "./.docker/functions.sh"
-            push
+            docker login -u "${DOCKER_LOGIN:?}" -p "${DOCKER_PASSWORD:?}"
+            docker-compose push php-composer-builder
+            docker tag damacus/php-composer-builder:latest damacus/php-composer-builder:${CIRCLE_BUILD_NUM}
+            docker push damacus/php-composer-builder:${CIRCLE_BUILD_NUM}
 
 workflows:
   version: 2
   build:
     jobs:
-      - build:
+      - test:
           context: org-global
+          filters:
+            branches:
+              ignore:
+                - master
+      - build_and_deploy:
+          context: org-global
+          filters:
+            branches:
+              only:
+                - master
   nightly:
     triggers:
       - schedule:
-          cron: "0 0 * * *"
+          cron: "0 0 * * 0"
+          context: org-global
           filters:
             branches:
               only:
                 - master
     jobs:
-      - build:
-          context: org-global
+      - build_and_deploy

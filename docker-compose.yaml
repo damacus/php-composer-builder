@@ -1,0 +1,14 @@
+version: '3.2'
+
+services:
+  php-composer-builder:
+    image: damacus/php-composer-builder
+    build:
+      context: .
+      args:
+        - CIRCLE_SHA1
+        - PROJECT
+    container_name: php-composer-builder
+    entrypoint: /bin/sh
+    stdin_open: true
+    tty: true
