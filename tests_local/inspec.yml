@@ -6,6 +6,3 @@ copyright_email:
 license: Apache-2.0
 summary: An InSpec Compliance Profile for PHP7.2 with composer
 version: 0.1.0
-depends:
-  - name: dev-sec/linux-baseline
-    git: git://github.com/dev-sec/linux-baseline

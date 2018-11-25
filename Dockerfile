@@ -11,6 +11,7 @@ RUN apk add --no-cache bash curl-dev build-base libffi-dev ca-certificates opens
 &&  chmod +x install-composer.sh \
 &&  ./install-composer.sh
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
 USER $user
 WORKDIR /project
 
