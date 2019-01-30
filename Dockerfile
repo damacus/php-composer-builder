@@ -1,7 +1,7 @@
-FROM php:7.2-alpine
+FROM php:7.3-alpine
 
 WORKDIR /opt
-ARG user='root'
+ARG user='composer'
 COPY install-composer.sh install-composer.sh
 
 RUN apk add --no-cache bash curl-dev build-base libffi-dev ca-certificates openssl git openssh \
