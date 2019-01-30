@@ -1,9 +1,9 @@
-version: 2
+---
+version: 2.1
 jobs:
   test:
     docker:
       - image: damacus/docker-builder:latest
-    working_directory: ~/project
     steps:
       - checkout
       - setup_remote_docker:
