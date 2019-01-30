@@ -53,14 +53,4 @@ workflows:
             branches:
               only:
                 - master
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 0 * * 0"
-          context: org-global
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - build_and_deploy
+
