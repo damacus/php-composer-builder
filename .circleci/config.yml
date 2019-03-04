@@ -21,8 +21,7 @@ jobs:
     working_directory: ~/project
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 17.09.0-ce
+      - setup_remote_docker
       - run:
           name: Build & Test Image
           command: |
